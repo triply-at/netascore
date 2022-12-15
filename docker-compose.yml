@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  bikeability:
+    build: .
+    volumes:
+    - ./data:/usr/src/bikeability/data
+    command: "data/settings.yml"
+    depends_on:
+      bikeability-db:
+        condition: service_healthy
+
+  bikeability-db:
+    image: postgis/postgis:13-3.2
+    ports:
+    - "5433:5432"
+    environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_DB=postgres
+    healthcheck:
+      test: /usr/bin/pg_isready
+      interval: 10s
+      timeout: 20s
+      retries: 120
